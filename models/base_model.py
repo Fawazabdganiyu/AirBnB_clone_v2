@@ -3,7 +3,6 @@
 Module Name: models/base_model.py
 Description: A definition of base class for other classes to inherit from
 """
-import models
 import uuid
 from datetime import datetime
 from sqlalchemy import Column, String, DateTime
@@ -21,17 +20,18 @@ class BaseModel:
         updated_at (datetime): The date when an instance was updated last
 
     """
+    __table_args__ = {'extend_existing': True}
 
     id = Column(String(60), primary_key=True, nullable=False)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""
 
         self.id = str(uuid.uuid4())
-        self.created_at = datetime.utcnow()
-        self.updated_at = datetime.utcnow()
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
         if kwargs:
             for k, v in kwargs.items():
                 if k != '__class__':
@@ -49,9 +49,11 @@ class BaseModel:
 
     def save(self):
         """Updates updated_at with current time when instance is changed"""
+        from models import storage
+
         self.updated_at = datetime.utcnow()
-        models.storage.new(self)
-        models.storage.save()
+        storage.new(self)
+        storage.save()
 
     def to_dict(self):
         """Convert instance into dict format"""
@@ -70,4 +72,6 @@ class BaseModel:
         """Delete the current instance from the `FileStorage` (models.storage)
         with its delete method
         """
-        models.storage.delete(self)
+        from models import storage
+
+        storage.delete(self)
