@@ -21,7 +21,8 @@ def teardown_appcontext(exception=None):
 def states_list():
     """ List the states in the storage """
     states = storage.all(State).values()
-    return render_template('7-states_list.html', states=states)
+    sorted_states = sorted(states, key=lambda state: state.name)
+    return render_template('7-states_list.html', states=sorted_states)
 
 
 if __name__ == '__main__':
