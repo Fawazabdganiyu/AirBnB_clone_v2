@@ -20,9 +20,8 @@ def teardown_appcontext(exception=None):
 @app.route('/states', strict_slashes=False)
 def states_list():
     """ List the states in the storage """
-    states = storage.all(State).values()
-    sorted_states = sorted(states, key=lambda state: state.name)
-    return render_template('9-states.html', states=sorted_states)
+    states = storage.all(State)
+    return render_template('9-states.html', states=states)
 
 
 @app.route('/states/<id>', strict_slashes=False)
@@ -32,11 +31,10 @@ def states_id(id):
 
     if f"State.{id}" in states:
         target_state = states[f"State.{id}"]
-        return render_template('9-states.html', states=states, id=id,
-                               target_state=target_state)
+        return render_template('9-states.html', state=target_state)
 
-    return render_template('9-states.html', id=id)
+    return render_template('9-states.html')
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=5000)
